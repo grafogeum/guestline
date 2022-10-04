@@ -1,22 +1,51 @@
 import { useState } from "react";
+import { Image } from "../types";
 import { useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
+import { Box, styled } from "@mui/material";
 import MobileStepper from "@mui/material/MobileStepper";
 import Button from "@mui/material/Button";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
+import { checkTypeStyleParameter } from "../utils/helper";
+
+const CarouselContainer = {
+	display: "flex",
+	flexDirection: "column",
+	alignItems: "center",
+	width: "255px"
+};
+
+const CarouselView = checkTypeStyleParameter({
+	display: "flex",
+	justifyContent: "center",
+	width: "100%",
+	position: "relative"
+});
+
+const Img = styled("img")({
+	margin: "auto",
+	display: "block",
+	maxWidth: "255px",
+	height: "200px",
+	overflow: "hidden",
+	aspectRatio: "16 / 9"
+});
+
+const StepperNavigation = checkTypeStyleParameter({
+	position: "absolute",
+	background: "transparent",
+	width: "255px",
+	padding: 0,
+	height: "200px"
+});
 
 const ButtonsStyled = { height: "255px", padding: 0, fontSize: "4rem" };
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-function SwipeableTextMobileStepper({
-	images
-}: {
-	images: [{ url: string; alt: string }];
-}) {
+function SwipeableTextMobileStepper({ images }: { images: Image[] }) {
 	const theme = useTheme();
 	const [activeStep, setActiveStep] = useState(0);
 	const maxSteps = images.length;
@@ -34,59 +63,29 @@ function SwipeableTextMobileStepper({
 	};
 
 	return (
-		<Box
-			sx={{ maxWidth: 255 }}
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				width: "255px"
-			}}
-		>
+		<Box sx={CarouselContainer}>
 			<AutoPlaySwipeableViews
 				axis={theme.direction === "rtl" ? "x-reverse" : "x"}
 				index={activeStep}
 				onChangeIndex={handleStepChange}
 				enableMouseEvents
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					width: "100%",
-					position: "relative"
-				}}
+				style={CarouselView}
 			>
-				{images.map(({ url, alt }: { url: string; alt: string }) => (
+				{images.map(({ url, alt = "" }: Image) => (
 					<div key={url}>
 						{Math.abs(activeStep - 1) <= 2 ? (
-							<Box
-								component="img"
-								sx={{
-									height: 255,
-									display: "block",
-									maxWidth: 255,
-									overflow: "hidden",
-									width: "100%"
-								}}
-								src={url}
-								alt={alt}
-							/>
+							<Img sx={{}} src={url} alt={alt} />
 						) : null}
 					</div>
 				))}
 			</AutoPlaySwipeableViews>
 			<MobileStepper
-				style={{
-					position: "absolute",
-					background: "transparent",
-					width: "255px",
-					padding: 0,
-					height: "255px"
-				}}
+				style={StepperNavigation}
 				steps={0}
 				position="static"
 				activeStep={activeStep}
 				nextButton={
-					maxSteps && (
+					maxSteps > 1 && (
 						<Button
 							size="large"
 							onClick={handleNext}
