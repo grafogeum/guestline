@@ -1,4 +1,3 @@
-import { Hotel } from "../types";
 import { Paths } from "../utils/routing";
 
 export const getHotelList = async () => {
