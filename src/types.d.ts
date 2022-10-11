@@ -28,7 +28,7 @@ export interface Position {
 
 export interface Image {
 	url: string;
-	alt?: string;
+	alt: string;
 }
 
 export type StyleParameter = {
@@ -38,7 +38,7 @@ export type StyleParameter = {
 interface Rooms {
 	id: string;
 	name: string;
-	shortDescription?: string;
+	shortDescription: string;
 	longDescription: string;
 	occupancy: Occupancy;
 	disabledAccess: boolean;
@@ -55,7 +55,7 @@ export interface Facility {
 interface Occupancy {
 	maxAdults: number;
 	maxChildren: number;
-	maxOverall?: number;
+	maxOverall: number;
 }
 
 interface RatePlans {
@@ -73,3 +73,7 @@ interface CancellationPolicy {
 	applicable: string;
 	hour: string;
 }
+
+export type HotelsAvailabilityInitial = {
+	availability: [];
+};

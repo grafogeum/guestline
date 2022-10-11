@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { Hotel, Rooms } from "./types";
 import SwipeableTextMobileStepper from "./components/Carousel";
@@ -12,10 +12,11 @@ import {
 } from "@mui/material";
 import { ThumbSection, CardLabels } from "./constants/constants";
 import { Rating } from "./components/Rating";
-import { RoomDetails } from "./components/RoomDetails";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { getHotelList, getRoomType } from "./utils/requests";
+import { GuestCapacityFilter } from "./components/GuestCapacityFilter";
+
+import { RoomsList } from "./components/RoomsList";
+import { useSelector, useDispatch } from "react-redux";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: "#fff",
@@ -32,57 +33,71 @@ const HotelInstance = {
 	flexWrap: "wrap"
 };
 
-const peopleCapacity = {
-	adultsInitial: 2,
-	minAdults: 0,
-	maxAdults: 5,
-	minChildren: 0,
-	maxChildren: 3
+type HotelList = {
+	loading: boolean;
+	hotelsList: Hotel[];
 };
 
 const App = () => {
-	const [hotelsList, setHotelsList] = useState<Hotel[]>([]);
-	const [roomType, setRoomType] = useState<Array<Rooms>>([]);
 	const [filterRankingVal, filterRankingValSet] = useState<number>(3);
-	const [filterMaxAdults, filterMaxAdultsSet] = useState<number>(
-		peopleCapacity.adultsInitial
-	);
-	const [filterMaxChildren, filterMaxChildrenSet] = useState<number>(
-		peopleCapacity.minChildren
+	const [resetHotelList, resetHotelListSet] = useState(false);
+	const dispatch = useDispatch();
+	const { hotelsList, loading } = useSelector(
+		({ hotels }: { hotels: HotelList }) => hotels
 	);
 
-	useEffect(() => {
-		getHotelList().then((hotelsList: Hotel[]) => setHotelsList(hotelsList));
-		return () => {};
-	}, []);
+	const { adultsInitial, childrenInitial } = useSelector(
+		({ filters }: { filters: Record<string, number> }) => filters
+	);
+
+	const revealRefs = useRef<HTMLDivElement[]>([]);
+	revealRefs.current = [];
+
+	const addToRefs = (el: HTMLDivElement) => {
+		if (el && !revealRefs.current.includes(el)) {
+			revealRefs.current.push(el);
+		}
+	};
 
 	useEffect(() => {
-		hotelsList.map(({ id }) => {
-			getRoomType(id).then(({ rooms }: { rooms: Rooms[] }) => {
-				setRoomType((prev) => [...prev, ...rooms]);
-			});
-			return null;
+		revealRefs.current.map((el) => {
+			const revealRoomsList = el.children[0]?.children[0]?.children.length;
+			let parentVisibility = el.parentElement;
+
+			if (revealRoomsList === 0) {
+				parentVisibility!.style.display = "none";
+				resetHotelListSet(true);
+			} else {
+				parentVisibility!.style.display = "flex";
+				resetHotelListSet(true);
+			}
 		});
-	}, [hotelsList]);
+	}, [adultsInitial, childrenInitial, hotelsList, filterRankingVal]);
+
+	useEffect(() => {
+		getHotelList()
+			.then(
+				(hotelsList: Hotel[]) =>
+					dispatch({ type: "SET_HOTELS_LIST", payload: hotelsList }) &&
+					hotelsList
+			)
+			.then(
+				(hotels: Hotel[]) =>
+					hotels &&
+					hotels.map(({ id }: { id: string }) =>
+						getRoomType(id).then(({ rooms }: { rooms: Rooms[] | [] }) =>
+							dispatch({
+								type: "SET_ROOMS",
+								payload: rooms
+							})
+						)
+					)
+			);
+	}, [resetHotelList]);
 
 	const handleSelect = (i: number) => {
 		const value = i;
 		value && filterRankingValSet(value);
-	};
-	const handleIncrease = (filterType: string) => {
-		filterType === "maxAdults"
-			? filterMaxAdults >= peopleCapacity.minAdults &&
-			  filterMaxAdults <= peopleCapacity.maxAdults &&
-			  filterMaxAdultsSet(filterMaxAdults + 1)
-			: filterMaxChildren >= peopleCapacity.minChildren &&
-			  filterMaxChildren <= peopleCapacity.maxChildren &&
-			  filterMaxChildrenSet(filterMaxChildren + 1);
-	};
-
-	const handleDecrease = (filterType: string) => {
-		filterType === "maxAdults"
-			? filterMaxAdults >= 1 && filterMaxAdultsSet(filterMaxAdults - 1)
-			: filterMaxChildren >= 1 && filterMaxChildrenSet(filterMaxChildren - 1);
 	};
 
 	return (
@@ -96,54 +111,35 @@ const App = () => {
 					</Item>
 				</Grid>
 			</Grid>
-			{hotelsList.length < 1 && <CircularProgress />}
+			{loading && <CircularProgress />}
 			<Rating value={filterRankingVal} handleSelect={handleSelect} />
-
-			<Typography> Adults </Typography>
-			<button onClick={() => handleIncrease("maxAdults")}>
-				<AddIcon />
-			</button>
-			<Typography
-				variant="h6"
-				component="h6"
-				color="secondary"
-				textAlign={"center"}
-			>
-				{filterMaxAdults}
-			</Typography>
-			<button onClick={() => handleDecrease("maxAdults")}>
-				<RemoveIcon />
-			</button>
-			<Typography> Children </Typography>
-			<button onClick={() => handleIncrease("maxChildren")}>
-				<AddIcon />
-			</button>
-			<Typography
-				variant="h6"
-				component="h6"
-				color="secondary"
-				textAlign={"center"}
-			>
-				{filterMaxChildren}
-			</Typography>
-			<button onClick={() => handleDecrease("maxChildren")}>
-				<RemoveIcon />
-			</button>
+			<GuestCapacityFilter />
 			{hotelsList &&
 				hotelsList
-					.filter(({ starRating }) => +starRating >= filterRankingVal)
+					.filter(
+						({ starRating }: { starRating: string }) =>
+							+starRating >= filterRankingVal
+					)
 					.map(
-						({
-							id,
-							name,
-							address1,
-							address2,
-							images,
-							starRating
-						}: Pick<
-							Hotel,
-							"id" | "name" | "address1" | "address2" | "images" | "starRating"
-						>) => (
+						(
+							{
+								id,
+								name,
+								address1,
+								address2,
+								images,
+								starRating
+							}: Pick<
+								Hotel,
+								| "id"
+								| "name"
+								| "address1"
+								| "address2"
+								| "images"
+								| "starRating"
+							>,
+							i: number
+						) => (
 							<Box
 								justifyContent="center"
 								alignItems="center"
@@ -168,41 +164,23 @@ const App = () => {
 											{name}
 										</Typography>
 										<Typography>
-											{CardLabels.hotelAddress1} {address1}
-										</Typography>
-										<Typography>
-											{CardLabels.hotelAddress2} {address2}
+											{(address1 &&
+												`${CardLabels.hotelAddress1}  ${address1}`) ||
+												`${CardLabels.hotelAddress1}  N/A`}
+											<br></br>
+											{(address2 &&
+												`${CardLabels.hotelAddress2}  ${address2}`) ||
+												`${CardLabels.hotelAddress2}  N/A`}
 										</Typography>
 									</Grid>
 									<Grid item xs={5}>
 										<Rating value={Number(starRating)} />
 									</Grid>
-									<Grid container>
-										{roomType &&
-											roomType
-												.filter(
-													({ occupancy }) =>
-														occupancy.maxAdults >= filterMaxAdults
-												)
-												.filter(
-													({ occupancy }) =>
-														occupancy.maxChildren >= filterMaxChildren
-												)
-												.map(
-													(
-														{ name, occupancy, longDescription }: Rooms,
-														i: number
-													) => (
-														<>
-															{roomType.length < 1 && <CircularProgress />}
-															<RoomDetails
-																{...{ name, occupancy, longDescription }}
-																key={i}
-															/>
-														</>
-													)
-												)}
-									</Grid>
+									<div ref={addToRefs}>
+										<Grid className="rooms-list" container>
+											<RoomsList index={i} />
+										</Grid>
+									</div>
 								</Grid>
 							</Box>
 						)

@@ -1,22 +1,22 @@
 import { Grid, Typography } from "@mui/material";
 import { Rooms } from "../types";
 
+const RoomDetailsStyle = {
+	width: "100%",
+	borderTop: "2px solid black",
+	display: "flex"
+};
+
 export const RoomDetails = (
 	{
 		name,
 		occupancy,
 		longDescription = "Veri very nice Hotel"
 	}: Pick<Rooms, "name" | "occupancy" | "longDescription">,
-	key: number
+	key: number,
+	index: number
 ) => (
-	<div
-		style={{
-			width: "100%",
-			borderTop: "2px solid black",
-			display: "flex"
-		}}
-		key={key}
-	>
+	<div style={RoomDetailsStyle} key={key}>
 		<Grid item xs={6}>
 			<Typography variant="h6" component="div">
 				{name}

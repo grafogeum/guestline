@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Image } from "../types";
 import { useTheme } from "@mui/material/styles";
 import { Box, styled } from "@mui/material";
@@ -45,7 +45,7 @@ const ButtonsStyled = { height: "255px", padding: 0, fontSize: "4rem" };
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-function SwipeableTextMobileStepper({ images }: { images: Image[] }) {
+const SwipeableTextMobileStepper = memo(({ images }: { images: Image[] }) => {
 	const theme = useTheme();
 	const [activeStep, setActiveStep] = useState(0);
 	const maxSteps = images.length;
@@ -73,9 +73,7 @@ function SwipeableTextMobileStepper({ images }: { images: Image[] }) {
 			>
 				{images.map(({ url, alt = "" }: Image) => (
 					<div key={url}>
-						{Math.abs(activeStep - 1) <= 2 ? (
-							<Img sx={{}} src={url} alt={alt} />
-						) : null}
+						{Math.abs(activeStep - 1) <= 2 ? <Img src={url} alt={alt} /> : null}
 					</div>
 				))}
 			</AutoPlaySwipeableViews>
@@ -121,6 +119,6 @@ function SwipeableTextMobileStepper({ images }: { images: Image[] }) {
 			/>
 		</Box>
 	);
-}
+});
 
 export default SwipeableTextMobileStepper;
