@@ -3,7 +3,6 @@ import { Rooms, Occupancy } from "../types";
 import { RoomDetails } from "./RoomDetails";
 import { GuestCapacity } from "../constants/constants";
 import { useSelector } from "react-redux";
-import { Hotel, HotelsAvailabilityInitial } from "../types.d";
 import { checkTypeStyleParameter } from "../utils/helper";
 
 const RoomsListStyle = checkTypeStyleParameter({

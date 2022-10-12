@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { Hotel, Rooms } from "./types";
+import { Hotel } from "./types";
 import SwipeableTextMobileStepper from "./components/Carousel";
 import {
 	Grid,
@@ -63,7 +63,6 @@ const App = () => {
 		revealRefs.current.map((el) => {
 			const revealRoomsList = el.children[0]?.children[0]?.children.length;
 			let parentVisibility = el.parentElement;
-
 			if (revealRoomsList === 0) {
 				parentVisibility!.style.display = "none";
 				resetHotelListSet(true);
@@ -75,24 +74,31 @@ const App = () => {
 	}, [adultsInitial, childrenInitial, hotelsList, filterRankingVal]);
 
 	useEffect(() => {
-		getHotelList()
-			.then(
-				(hotelsList: Hotel[]) =>
-					dispatch({ type: "SET_HOTELS_LIST", payload: hotelsList }) &&
-					hotelsList
-			)
-			.then(
-				(hotels: Hotel[]) =>
-					hotels &&
-					hotels.map(({ id }: { id: string }) =>
-						getRoomType(id).then(({ rooms }: { rooms: Rooms[] | [] }) =>
-							dispatch({
-								type: "SET_ROOMS",
-								payload: rooms
-							})
-						)
-					)
-			);
+		try {
+			const fetchHotelList = async () => {
+				const hotelList = await getHotelList();
+				await dispatch({
+					type: "SEARCH_HOTELS_LIST_SUCCESS",
+					payload: hotelList
+				});
+				await hotelList.map(async ({ id }: { id: string }) => {
+					const { rooms } = await getRoomType(id);
+					dispatch({
+						type: "SET_ROOMS",
+						payload: rooms
+					});
+				});
+			};
+			fetchHotelList();
+		} catch (error) {
+			if (error instanceof Error) {
+				console.log(`Data could not be fetched ${error.message}`);
+				dispatch({
+					type: "SEARCH_HOTELS_LIST_ERROR",
+					payload: error.message
+				});
+			}
+		}
 	}, [resetHotelList]);
 
 	const handleSelect = (i: number) => {

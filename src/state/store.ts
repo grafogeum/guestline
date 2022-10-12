@@ -3,50 +3,43 @@ import { combineReducers } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 
-import { Hotel, Rooms, HotelsAvailabilityInitial } from "./types";
+import { HotelsActions } from "./actions";
+import { ActionsHotelType } from "./action-types";
+
+import { Hotel, Rooms } from "../types";
 interface InitialState {
 	loading: boolean;
 	hotelsList?: Hotel[] | [];
 	roomType?: Rooms[] | [];
-	error: boolean;
+	error: string | null;
 }
 
 const initialState: InitialState = {
 	loading: false,
-	error: false,
+	error: null,
 	hotelsList: []
 };
 
-const hotelsReducer = (state = initialState, action: any) => {
+const hotelsReducer = (state = initialState, action: HotelsActions) => {
 	switch (action.type) {
-		case "GET_HOTELS_LIST":
+		case ActionsHotelType.SEARCH_HOTELS_LIST:
 			return {
-				loading: true
+				loading: true,
+				error: null,
+				hotelsList: []
 			};
-		case "SET_HOTELS_LIST":
+		case ActionsHotelType.SEARCH_HOTELS_LIST_SUCCESS:
 			return {
 				loading: false,
+				error: null,
 				hotelsList: action.payload
 			};
-		default:
-			return state;
-	}
-};
-
-const hotelsAvailabilityInitial: HotelsAvailabilityInitial = {
-	availability: []
-};
-
-const hotelsAvailabilityReducer = (
-	state = hotelsAvailabilityInitial,
-	action: any
-) => {
-	switch (action.type) {
-		case "FILTER_ROOMS":
+		case ActionsHotelType.SEARCH_HOTELS_LIST_ERROR:
 			return {
-				availability: [...state.availability, action.payload]
+				loading: false,
+				error: action.payload,
+				hotelsList: []
 			};
-
 		default:
 			return state;
 	}
@@ -54,7 +47,7 @@ const hotelsAvailabilityReducer = (
 
 const initialStateRooms: InitialState = {
 	loading: false,
-	error: false,
+	error: null,
 	roomType: []
 };
 

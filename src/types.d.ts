@@ -73,7 +73,3 @@ interface CancellationPolicy {
 	applicable: string;
 	hour: string;
 }
-
-export type HotelsAvailabilityInitial = {
-	availability: [];
-};

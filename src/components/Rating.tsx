@@ -2,6 +2,8 @@ import { Box } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
+const RatingStyles = { display: "flex", alignItems: "center" };
+
 export const Rating = ({
 	value = 5,
 	handleSelect
@@ -16,7 +18,7 @@ export const Rating = ({
 	];
 
 	return (
-		<Box sx={{ display: "flex", alignItems: "center" }}>
+		<Box sx={RatingStyles}>
 			<Box sx={{ ml: 2 }}>
 				{ratingStars.map((star, i) =>
 					star ? (
