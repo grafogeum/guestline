@@ -33,6 +33,20 @@ const HotelInstance = {
 	flexWrap: "wrap"
 };
 
+const FilterStyles = {
+	width: "70vw",
+	display: "flex",
+	justifyContent: "center",
+	alignItems: "center",
+	padding: "1rem 1rem",
+	boxSizing: "border-box" as "border-box",
+	margin: " auto",
+	marginBottom: "1rem",
+	marginTop: "-3vh",
+	backgroundColor: "#fff",
+	border: "2px solid black"
+};
+
 const App = () => {
 	const [filterRankingVal, filterRankingValSet] = useState<number>(3);
 	const [resetHotelList, resetHotelListSet] = useState(false);
@@ -116,17 +130,26 @@ const App = () => {
 	return (
 		<div className="App">
 			<Grid pb={10} container>
-				<Grid item justifyContent="center" alignItems="center" xs={12}>
-					<Item>
+				<Grid
+					item
+					justifyContent="center"
+					alignItems="center"
+					xs={12}
+					sx={{ position: "relative" }}
+				>
+					<Item sx={{ height: "18vh" }}>
 						<Typography variant="h2" component="h2" align="center">
 							{ThumbSection.hotelTitle}
 						</Typography>
 					</Item>
+					<div style={FilterStyles}>
+						<Rating value={filterRankingVal} handleSelect={handleSelect} />
+						<GuestCapacityFilter />
+					</div>
 				</Grid>
 			</Grid>
+
 			{loading && <CircularProgress />}
-			<Rating value={filterRankingVal} handleSelect={handleSelect} />
-			<GuestCapacityFilter />
 			{hotelsList &&
 				hotelsList
 					.filter(
@@ -166,7 +189,6 @@ const App = () => {
 									flexWrap={{ xs: "wrap" }}
 									justifyContent="space-between"
 									xs={10}
-									my={2}
 									sx={HotelInstance}
 								>
 									<Grid item xs={4}>
