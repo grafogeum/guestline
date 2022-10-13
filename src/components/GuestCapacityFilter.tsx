@@ -3,6 +3,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { GuestTypes } from "../constants/constants";
+import { GuestCapacity } from "../state/action-types";
 
 const GuestCapacityFilterStyles = {
 	display: "flex",
@@ -22,7 +23,7 @@ export const GuestCapacityFilter = () => {
 				<button
 					onClick={() =>
 						dispatch({
-							type: "INCREASE_ADULTS_CAPACITY",
+							type: GuestCapacity.INCREASE_ADULTS_CAPACITY,
 							payload:
 								adultsInitial <= maxAdults ? adultsInitial + 1 : adultsInitial
 						})
@@ -38,7 +39,7 @@ export const GuestCapacityFilter = () => {
 				<button
 					onClick={() =>
 						dispatch({
-							type: "DECREASE_ADULTS_CAPACITY",
+							type: GuestCapacity.DECREASE_ADULTS_CAPACITY,
 							payload: adultsInitial >= 1 ? adultsInitial - 1 : 0
 						})
 					}
@@ -51,7 +52,7 @@ export const GuestCapacityFilter = () => {
 				<button
 					onClick={() =>
 						dispatch({
-							type: "INCREASE_CHILD_CAPACITY",
+							type: GuestCapacity.INCREASE_CHILDREN_CAPACITY,
 							payload:
 								childrenInitial <= maxChildren
 									? childrenInitial + 1
@@ -69,7 +70,7 @@ export const GuestCapacityFilter = () => {
 				<button
 					onClick={() =>
 						dispatch({
-							type: "DECREASE_CHILD_CAPACITY",
+							type: GuestCapacity.DECREASE_CHILDREN_CAPACITY,
 							payload: childrenInitial >= 1 ? childrenInitial - 1 : 0
 						})
 					}

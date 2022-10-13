@@ -8,7 +8,6 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
-import { checkTypeStyleParameter } from "../utils/helper";
 
 const CarouselContainer = {
 	display: "flex",
@@ -17,12 +16,12 @@ const CarouselContainer = {
 	width: "255px"
 };
 
-const CarouselView = checkTypeStyleParameter({
+const CarouselView = {
 	display: "flex",
 	justifyContent: "center",
 	width: "100%",
-	position: "relative"
-});
+	position: "relative" as "relative"
+};
 
 const Img = styled("img")({
 	margin: "auto",
@@ -33,13 +32,13 @@ const Img = styled("img")({
 	aspectRatio: "16 / 9"
 });
 
-const StepperNavigation = checkTypeStyleParameter({
-	position: "absolute",
+const StepperNavigation = {
+	position: "absolute" as "absolute",
 	background: "transparent",
 	width: "255px",
 	padding: 0,
 	height: "200px"
-});
+};
 
 const ButtonsStyled = { height: "255px", padding: 0, fontSize: "4rem" };
 

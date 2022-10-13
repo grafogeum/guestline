@@ -3,8 +3,12 @@ import { combineReducers } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 
-import { HotelsActions } from "./actions";
-import { ActionsHotelType } from "./action-types";
+import { HotelsActions, CapacityActions, RoomsActions } from "./actions";
+import {
+	ActionsHotelType,
+	GuestCapacity,
+	ActionRoomsType
+} from "./action-types";
 
 import { Hotel, Rooms } from "../types";
 interface InitialState {
@@ -53,14 +57,21 @@ const initialStateRooms: InitialState = {
 
 const roomsReducer = (state = initialStateRooms, action: any) => {
 	switch (action.type) {
-		case "GET_ROOMS_LIST":
+		case ActionRoomsType.GET_ROOMS_LIST:
 			return {
-				loading: true
+				loading: true,
+				roomType: []
 			};
-		case "SET_ROOMS":
+		case ActionRoomsType.GET_ROOMS_LIST_SUCCESS:
 			return {
 				...state,
 				roomType: [...state.roomType!, action.payload]
+			};
+		case ActionRoomsType.GET_ROOMS_LIST_ERROR:
+			return {
+				loading: false,
+				error: action.payload,
+				roomType: []
 			};
 		default:
 			return state;
@@ -76,24 +87,24 @@ const initialStateFilter: Record<string, number> = {
 	maxChildren: 4
 };
 
-const filterReducer = (state = initialStateFilter, action: any) => {
+const filterReducer = (state = initialStateFilter, action: CapacityActions) => {
 	switch (action.type) {
-		case "INCREASE_ADULTS_CAPACITY":
+		case GuestCapacity.INCREASE_ADULTS_CAPACITY:
 			return {
 				...state,
 				adultsInitial: action.payload
 			};
-		case "DECREASE_ADULTS_CAPACITY":
+		case GuestCapacity.DECREASE_ADULTS_CAPACITY:
 			return {
 				...state,
 				adultsInitial: action.payload
 			};
-		case "INCREASE_CHILD_CAPACITY":
+		case GuestCapacity.INCREASE_CHILDREN_CAPACITY:
 			return {
 				...state,
 				childrenInitial: action.payload
 			};
-		case "DECREASE_CHILD_CAPACITY":
+		case GuestCapacity.DECREASE_CHILDREN_CAPACITY:
 			return {
 				...state,
 				childrenInitial: action.payload
@@ -108,7 +119,6 @@ const rootReducer = combineReducers({
 	hotels: hotelsReducer,
 	rooms: roomsReducer,
 	filters: filterReducer
-	// hotelsAvailability: hotelsAvailabilityReducer
 });
 
 export const store = createStore(

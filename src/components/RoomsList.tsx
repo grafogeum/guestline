@@ -1,5 +1,5 @@
 import { Grid, CircularProgress } from "@mui/material";
-import { Rooms, Occupancy } from "../types";
+import { Rooms, Occupancy, HotelList } from "../types";
 import { RoomDetails } from "./RoomDetails";
 import { GuestCapacity } from "../constants/constants";
 import { useSelector } from "react-redux";
@@ -12,16 +12,26 @@ const RoomsListStyle = checkTypeStyleParameter({
 	width: "100%"
 });
 
-export const RoomsList = ({ index }: { index: number }) => {
+export const RoomsList = ({ index }: { index: string }) => {
 	const roomType = useSelector((state: any) => state.rooms.roomType);
 	const filters = useSelector(
 		({ filters }: { filters: Record<string, number> }) => filters
 	);
 
+	const { hotelsList } = useSelector(
+		({ hotels }: { hotels: HotelList }) => hotels
+	);
+
+	const checkID = ({ id }: { id: string }) => id === index;
+
+	const trueId = hotelsList.findIndex(checkID);
+
+	console.log("RoomsList L:29", trueId);
+
 	return (
 		<Grid container>
-			{roomType[index] &&
-				roomType[index]
+			{roomType[trueId] &&
+				roomType[trueId]
 					.filter(
 						({
 							occupancy
@@ -44,11 +54,11 @@ export const RoomsList = ({ index }: { index: number }) => {
 							i: number
 						) => (
 							<div
-								className={`checkList${index}`}
+								className={`checkList${trueId}`}
 								style={RoomsListStyle}
 								key={i}
 							>
-								{roomType[index].length < 1 && <CircularProgress />}
+								{roomType[trueId].length < 1 && <CircularProgress />}
 								<RoomDetails {...{ name, occupancy, longDescription }} />
 							</div>
 						)

@@ -15,3 +15,8 @@ export const enum GuestTypes {
 	Adults = "Adults",
 	Children = "Children"
 }
+
+export const enum RankingValues {
+	minimalRanking = 0,
+	maximalRanking = 5
+}

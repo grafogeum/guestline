@@ -73,3 +73,8 @@ interface CancellationPolicy {
 	applicable: string;
 	hour: string;
 }
+
+export type HotelList = {
+	loading: boolean;
+	hotelsList: Hotel[];
+};

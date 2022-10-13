@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { Hotel } from "./types";
+import { Hotel, HotelList } from "./types";
 import SwipeableTextMobileStepper from "./components/Carousel";
 import {
 	Grid,
@@ -10,11 +10,11 @@ import {
 	Typography,
 	CircularProgress
 } from "@mui/material";
+import { ActionsHotelType, ActionRoomsType } from "./state/action-types";
 import { ThumbSection, CardLabels } from "./constants/constants";
 import { Rating } from "./components/Rating";
 import { getHotelList, getRoomType } from "./utils/requests";
 import { GuestCapacityFilter } from "./components/GuestCapacityFilter";
-
 import { RoomsList } from "./components/RoomsList";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -31,11 +31,6 @@ const HotelInstance = {
 	border: "2px solid black",
 	display: "flex",
 	flexWrap: "wrap"
-};
-
-type HotelList = {
-	loading: boolean;
-	hotelsList: Hotel[];
 };
 
 const App = () => {
@@ -61,14 +56,26 @@ const App = () => {
 
 	useEffect(() => {
 		revealRefs.current.map((el) => {
+			const revealRoomsList2 = el.children[0]?.children[0]?.children.length;
+			let parentVisibility = el.parentElement;
+			if (revealRoomsList2 !== 0) {
+				parentVisibility!.style.display = "flex";
+			} else {
+				parentVisibility!.style.display = "none";
+			}
+			resetHotelListSet(true);
+		});
+	}, [adultsInitial, childrenInitial, hotelsList]);
+
+	useEffect(() => {
+		revealRefs.current.map((el) => {
 			const revealRoomsList = el.children[0]?.children[0]?.children.length;
 			let parentVisibility = el.parentElement;
-			if (revealRoomsList === 0) {
-				parentVisibility!.style.display = "none";
-				resetHotelListSet(true);
-			} else {
+
+			if (revealRoomsList !== 0) {
 				parentVisibility!.style.display = "flex";
-				resetHotelListSet(true);
+			} else {
+				parentVisibility!.style.display = "none";
 			}
 		});
 	}, [adultsInitial, childrenInitial, hotelsList, filterRankingVal]);
@@ -78,13 +85,13 @@ const App = () => {
 			const fetchHotelList = async () => {
 				const hotelList = await getHotelList();
 				await dispatch({
-					type: "SEARCH_HOTELS_LIST_SUCCESS",
+					type: ActionsHotelType.SEARCH_HOTELS_LIST_SUCCESS,
 					payload: hotelList
 				});
 				await hotelList.map(async ({ id }: { id: string }) => {
 					const { rooms } = await getRoomType(id);
-					dispatch({
-						type: "SET_ROOMS",
+					await dispatch({
+						type: ActionRoomsType.GET_ROOMS_LIST_SUCCESS,
 						payload: rooms
 					});
 				});
@@ -92,9 +99,9 @@ const App = () => {
 			fetchHotelList();
 		} catch (error) {
 			if (error instanceof Error) {
-				console.log(`Data could not be fetched ${error.message}`);
+				console.error(`Data could not be fetched ${error.message}`);
 				dispatch({
-					type: "SEARCH_HOTELS_LIST_ERROR",
+					type: ActionsHotelType.SEARCH_HOTELS_LIST_ERROR,
 					payload: error.message
 				});
 			}
@@ -155,6 +162,8 @@ const App = () => {
 								<Grid
 									container
 									spacing={1}
+									display="flex"
+									flexWrap={{ xs: "wrap" }}
 									justifyContent="space-between"
 									xs={10}
 									my={2}
@@ -184,7 +193,7 @@ const App = () => {
 									</Grid>
 									<div ref={addToRefs}>
 										<Grid className="rooms-list" container>
-											<RoomsList index={i} />
+											<RoomsList index={id} />
 										</Grid>
 									</div>
 								</Grid>
