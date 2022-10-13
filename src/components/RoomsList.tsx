@@ -26,8 +26,6 @@ export const RoomsList = ({ index }: { index: string }) => {
 
 	const trueId = hotelsList.findIndex(checkID);
 
-	console.log("RoomsList L:29", trueId);
-
 	return (
 		<Grid container>
 			{roomType[trueId] &&
