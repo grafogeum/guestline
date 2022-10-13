@@ -4,6 +4,7 @@ import { Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { GuestTypes } from "../constants/constants";
 import { GuestCapacity } from "../state/action-types";
+import { Button } from "./Button";
 
 const GuestCapacityFilterStyles = {
 	display: "flex",
@@ -20,7 +21,7 @@ export const GuestCapacityFilter = () => {
 		<div style={GuestCapacityFilterStyles}>
 			<Typography variant="h6">{GuestTypes.Adults}</Typography>
 			{
-				<button
+				<Button
 					onClick={() =>
 						dispatch({
 							type: GuestCapacity.INCREASE_ADULTS_CAPACITY,
@@ -30,13 +31,13 @@ export const GuestCapacityFilter = () => {
 					}
 				>
 					<AddIcon />
-				</button>
+				</Button>
 			}
 			<Typography variant="h6" color={"primary"}>
 				{adultsInitial}
 			</Typography>
 			{
-				<button
+				<Button
 					onClick={() =>
 						dispatch({
 							type: GuestCapacity.DECREASE_ADULTS_CAPACITY,
@@ -45,11 +46,11 @@ export const GuestCapacityFilter = () => {
 					}
 				>
 					<RemoveIcon />
-				</button>
+				</Button>
 			}
 			<Typography variant="h6">{GuestTypes.Children}</Typography>
 			{
-				<button
+				<Button
 					onClick={() =>
 						dispatch({
 							type: GuestCapacity.INCREASE_CHILDREN_CAPACITY,
@@ -61,13 +62,13 @@ export const GuestCapacityFilter = () => {
 					}
 				>
 					<AddIcon />
-				</button>
+				</Button>
 			}
 			<Typography variant="h6" color={"primary"}>
 				{childrenInitial}
 			</Typography>
 			{
-				<button
+				<Button
 					onClick={() =>
 						dispatch({
 							type: GuestCapacity.DECREASE_CHILDREN_CAPACITY,
@@ -76,7 +77,7 @@ export const GuestCapacityFilter = () => {
 					}
 				>
 					<RemoveIcon />
-				</button>
+				</Button>
 			}
 		</div>
 	);
